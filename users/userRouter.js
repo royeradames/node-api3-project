@@ -51,8 +51,6 @@ router.put('/:id', (req, res) => {
 function validateUserId (req, res, next) {
     getById(req.params.id)
         .then(user => {
-            console.log(user)
-            console.log(user.length)
             if (user) {
               req.user = user
             } else {

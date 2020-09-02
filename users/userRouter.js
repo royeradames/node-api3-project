@@ -1,4 +1,5 @@
 const express = require('express');
+const {get,getById, getUserPosts} = require('./userDb');
 
 const router = express.Router();
 
@@ -8,14 +9,29 @@ router.post('/', (req, res) => {
 
 router.post('/:id/posts', (req, res) => {
   // do your magic!
+  
 });
 
+// done
 router.get('/', (req, res) => {
   // do your magic!
+    try {
+      get()
+    .then(allUsers => {
+      res.status(200).json(allUsers)
+    })
+    } catch (error) {
+      res.status(500).json({error: 'Server could not get all users'})
+    }
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', validateUserId, (req, res) => {
   // do your magic!
+  try {
+    res.status(200).json(req.user)
+  } catch (error) {
+    res.status(500).json({error: 'server cannot find user by id'})
+  }
 });
 
 router.get('/:id/posts', (req, res) => {
@@ -32,9 +48,20 @@ router.put('/:id', (req, res) => {
 
 //custom middleware
 
-function validateUserId(req, res, next) {
-  // do your magic!
+function validateUserId (req, res, next) {
+    getById(req.params.id)
+        .then(user => {
+            console.log(user)
+            console.log(user.length)
+            if (user) {
+              req.user = user
+            } else {
+              res.status(400).json({ error: 'User not found' })
+            }
+            next()
+        })
 }
+
 
 function validateUser(req, res, next) {
   // do your magic!

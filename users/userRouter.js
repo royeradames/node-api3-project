@@ -1,5 +1,6 @@
 const express = require('express');
-const {get,getById, getUserPosts} = require('./userDb');
+const {get,getById, getUserPosts, remove} = require('./userDb');
+const { response } = require('express');
 
 const router = express.Router();
 
@@ -25,6 +26,7 @@ router.get('/', (req, res) => {
     }
 });
 
+//done
 router.get('/:id', validateUserId, (req, res) => {
   // do your magic!
   try {
@@ -34,16 +36,54 @@ router.get('/:id', validateUserId, (req, res) => {
   }
 });
 
-router.get('/:id/posts', (req, res) => {
+// done
+router.get('/:id/posts', validateUserId, (req, res) => {
   // do your magic!
+  try {
+    console.log(req.user.id)
+    getUserPosts(req.user.id)
+      .then(posts => {
+        console.log(posts)
+        res.status(200).json(posts)
+      })
+  } catch (error) {
+    res.status(500).json({error: 'server cannot get the user posts'})
+  }
 });
 
-router.delete('/:id', (req, res) => {
+//done
+router.delete('/:id', validateUserId, (req, res) => {
   // do your magic!
+  try {
+    
+    remove(req.user.id)
+    .then(resp => {
+      res.status(200).json({
+        message: 'user delete',
+        user: req.user
+      })
+    })
+
+/*
+
+{
+  "id": 1,
+  "name": "Frodo Baggins"
+}
+{
+        "id": 2,
+        "name": "Samwise Gamgee"
+    }
+*/
+  } catch (error) {
+    res.status(500).json({error: 'server cannot delete the user posts'})
+    
+  }
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id', validateUserId, (req, res) => {
   // do your magic!
+
 });
 
 //custom middleware
@@ -51,6 +91,7 @@ router.put('/:id', (req, res) => {
 function validateUserId (req, res, next) {
     getById(req.params.id)
         .then(user => {
+          console.log(user)
             if (user) {
               req.user = user
             } else {

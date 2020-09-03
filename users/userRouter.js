@@ -1,5 +1,6 @@
 const express = require('express');
 const { get, getById, getUserPosts, remove, update, insert } = require('./userDb');
+const postDB = require('../posts/postDb');
 const { response } = require('express');
 
 const router = express.Router();
@@ -29,7 +30,7 @@ router.post('/', validateUser, (req, res) => {
 router.post('/:id/posts', validatePost, validateUserId, (req, res) => {
   // do your magic!
   try {
-    insert(req.body)
+    postDB.insert(req.body)
       .then(newPost => {
         console.log(newPost)
         if(newPost) res.status(200).json(newPost)

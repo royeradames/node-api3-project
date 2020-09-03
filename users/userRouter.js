@@ -1,14 +1,27 @@
 const express = require('express');
-const { get, getById, getUserPosts, remove, update } = require('./userDb');
+const { get, getById, getUserPosts, remove, update, insert } = require('./userDb');
 const { response } = require('express');
 
 const router = express.Router();
 
-router.post('/', (req, res) => {
+router.post('/', validatePost, (req, res) => {
   // do your magic!
+  try {
+    console.log(req.body)
+    insert(req.body)
+      .then(newUser => {
+        if(newUser) {
+          res.status(200).json(newUser)
+        } else {
+          res.status(400).json({error: 'User was not created'})
+        }
+      })
+  } catch (error) {
+    res.status(500).json({ error: 'server cannot create new user' })
+  }
 });
 
-router.post('/:id/posts', (req, res) => {
+router.post('/:id/posts', validatePost, validateUserId, (req, res) => {
   // do your magic!
 
 });
@@ -86,13 +99,13 @@ router.put('/:id', validateUser, validateUserId, (req, res) => {
   try {
     console.log(req.user.id)
     console.log(req.body.name)
-    
+
     update(req.user.id, req.body)
       .then(updatedRecordsCount => {
         console.log(updatedRecordsCount)
         if (updatedRecordsCount) {
           console.log(updatedRecordsCount)
-          res.status(200).json({message: `Succesfully update user of id of ${req.user.id}`, id: req.user.id})
+          res.status(200).json({ message: `Succesfully update user of id of ${req.user.id}`, id: req.user.id })
         } else {
           res.status(400).json({ error: 'user did not update' })
         }
@@ -146,6 +159,20 @@ function validateUser(req, res, next) {
 
 function validatePost(req, res, next) {
   // do your magic!
+
+  try {
+    console.log(req.body.text)
+    console.log(req.body.user_id)
+    if (req.body.text && req.body.user_id) {
+      console.log(`hitting next() inside validatePost`)
+      next()
+    } else {
+      res.status(400).json({ error: 'You need text and user_id' })
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'server cannot validate your post' })
+
+  }
 }
 
 module.exports = router;

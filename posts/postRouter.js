@@ -30,8 +30,17 @@ router.get('/:id', validatePostId, (req, res) => {
 
 router.delete('/:id', validatePostId, (req, res) => {
   // do your magic!
+  remove(req.params.id)
+    .then(deleted => {
+      res.status(204).end()
+    })
+    .catch(() => {
+      res.status(500).json({error: 'Server cannot delete post'})
+    })
+
 });
 
+// done
 router.put('/:id', validatePost, validatePostId, (req, res) => {
   // do your magic!
   update(req.params.id, req.body)

@@ -13,9 +13,19 @@ router.get('/', (req, res) => {
       res.status(500).json({ error: 'server get all posts' })
     })
 });
-
+//done
 router.get('/:id', validatePostId, (req, res) => {
   // do your magic!
+  getById(req.params.id)
+    .then(post => {
+      console.log(`Line 21 --${post}`)
+      
+      post ? res.status(200).json(post) : res.status(404).json({error: 'Post Id not found'})
+    })
+    .catch(error => {
+      console.log(error)
+      res.status(500).json({error: 'server could not get post by its id'})
+    })
 });
 
 router.delete('/:id', validatePostId, (req, res) => {

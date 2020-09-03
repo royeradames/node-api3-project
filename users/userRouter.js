@@ -4,17 +4,22 @@ const { response } = require('express');
 
 const router = express.Router();
 
-router.post('/', validatePost, (req, res) => {
+router.post('/', validateUser, (req, res) => {
   // do your magic!
   try {
     console.log(req.body)
     insert(req.body)
       .then(newUser => {
+        console.log(`inside post / response --> ${newUser}`)
         if(newUser) {
           res.status(200).json(newUser)
         } else {
           res.status(400).json({error: 'User was not created'})
         }
+      })
+      .catch(err => {
+        console.log(`error on catch inside post / ${err}`)
+        res.status(400).json({error: 'Did not receive the require user data'})
       })
   } catch (error) {
     res.status(500).json({ error: 'server cannot create new user' })
@@ -142,7 +147,7 @@ function validateUserId(req, res, next) {
 function validateUser(req, res, next) {
   // do your magic!
   try {
-    const name = String(req.body.name)
+    const name = req.body.name
     console.log(name)
     if (name) {
       req.body.name = name

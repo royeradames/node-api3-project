@@ -4,14 +4,14 @@ const postDB = require('../posts/postDb');
 const { response } = require('express');
 
 const router = express.Router();
-
+//done
 router.post('/', validateUser, (req, res) => {
   // do your magic!
   try {
     console.log(req.body)
     insert(req.body)
       .then(newUser => {
-        console.log(`inside post / response --> ${newUser}`)
+        // console.log(`inside post / response --> ${newUser}`)
         if(newUser) {
           res.status(200).json(newUser)
         } else {
@@ -19,25 +19,25 @@ router.post('/', validateUser, (req, res) => {
         }
       })
       .catch(err => {
-        console.log(`error on catch inside post / ${err}`)
+        // console.log(`error on catch inside post / ${err}`)
         res.status(400).json({error: 'Did not receive the require user data'})
       })
   } catch (error) {
     res.status(500).json({ error: 'server cannot create new user' })
   }
 });
-
+//done
 router.post('/:id/posts', validatePost, validateUserId, (req, res) => {
   // do your magic!
   try {
     postDB.insert(req.body)
       .then(newPost => {
-        console.log(newPost)
+        // console.log(newPost)
         if(newPost) res.status(200).json(newPost)
         
       })
       .catch(err => {
-        console.log(err)
+        // console.log(err)
         res.status(400).json({error: 'Did not receive require data'})
       })
   } catch (error) {
@@ -72,10 +72,10 @@ router.get('/:id', validateUserId, (req, res) => {
 router.get('/:id/posts', validateUserId, (req, res) => {
   // do your magic!
   try {
-    console.log(req.user.id)
+    // console.log(req.user.id)
     getUserPosts(req.user.id)
       .then(posts => {
-        console.log(posts)
+        // console.log(posts)
         res.status(200).json(posts)
       })
   } catch (error) {
@@ -116,14 +116,14 @@ router.delete('/:id', validateUserId, (req, res) => {
 router.put('/:id', validateUser, validateUserId, (req, res) => {
   // do your magic!
   try {
-    console.log(req.user.id)
-    console.log(req.body.name)
+    // console.log(req.user.id)
+    // console.log(req.body.name)
 
     update(req.user.id, req.body)
       .then(updatedRecordsCount => {
-        console.log(updatedRecordsCount)
+        // console.log(updatedRecordsCount)
         if (updatedRecordsCount) {
-          console.log(updatedRecordsCount)
+          // console.log(updatedRecordsCount)
           res.status(200).json({ message: `Succesfully update user of id of ${req.user.id}`, id: req.user.id })
         } else {
           res.status(400).json({ error: 'user did not update' })
@@ -139,13 +139,13 @@ router.put('/:id', validateUser, validateUserId, (req, res) => {
 function validateUserId(req, res, next) {
 
   try {
-    console.log(req.params.id)
+    // console.log(req.params.id)
     getById(req.params.id)
       .then(user => {
-        console.log(`user on validateUserId -->${user}`)
+        // console.log(`user on validateUserId -->${user}`)
         if (user) {
           req.user = user
-          console.log(`user on validateUserId if statement-->${user}`)
+          // console.log(`user on validateUserId if statement-->${user}`)
           next()
         } else {
           res.status(400).json({ error: 'User not found' })
@@ -162,10 +162,10 @@ function validateUser(req, res, next) {
   // do your magic!
   try {
     const name = req.body.name
-    console.log(name)
+    // console.log(name)
     if (name) {
       req.body.name = name
-      console.log('inside if statment of validateUser, the next() is right after it')
+      // console.log('inside if statment of validateUser, the next() is right after it')
       next()
     } else {
       res.status(400).json({ error: 'name is require' })
@@ -180,10 +180,10 @@ function validatePost(req, res, next) {
   // do your magic!
 
   try {
-    console.log(req.body.text)
-    console.log(req.body.user_id)
+    // console.log(req.body.text)
+    // console.log(req.body.user_id)
     if (req.body.text && req.body.user_id) {
-      console.log(`hitting next() inside validatePost`)
+      // console.log(`hitting next() inside validatePost`)
       next()
     } else {
       res.status(400).json({ error: 'You need text and user_id' })

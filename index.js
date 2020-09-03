@@ -2,7 +2,7 @@
 // libraries
 const express = require("express")
 const morgan = require('morgan')
-
+const logger = require('./middleware/logger')
 // routers
 const PostRouter= require('./posts/postRouter')
 const userRouter = require('./users/userRouter')
@@ -13,6 +13,7 @@ const port = 4000
 // build in middleware
 server.use(express.json())
 // custome middleware
+server.use(logger)
 server.use('/posts',PostRouter)
 server.use('/users',userRouter)
 

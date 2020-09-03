@@ -1,5 +1,6 @@
 const express = require('express');
-const { get, getById } = require('./postDb')
+const { get, getById, remove, update } = require('./postDb')
+const validatePost = require('../middleware/validatePost')
 const router = express.Router();
 // done
 router.get('/', (req, res) => {
@@ -19,12 +20,11 @@ router.get('/:id', validatePostId, (req, res) => {
   getById(req.params.id)
     .then(post => {
       console.log(`Line 21 --${post}`)
-      
-      post ? res.status(200).json(post) : res.status(404).json({error: 'Post Id not found'})
+      res.status(200).json(post)
     })
     .catch(error => {
       console.log(error)
-      res.status(500).json({error: 'server could not get post by its id'})
+      res.status(500).json({ error: 'server could not get post by its id' })
     })
 });
 
@@ -32,8 +32,26 @@ router.delete('/:id', validatePostId, (req, res) => {
   // do your magic!
 });
 
-router.put('/:id', validatePostId, (req, res) => {
+router.put('/:id', validatePost, validatePostId, (req, res) => {
   // do your magic!
+  update(req.params.id, req.body)
+    .then(updatePost => {
+      console.log(updatePost)
+      getById(req.params.id)
+        .then(updatePost => {
+          res.status(200).json(updatePost)
+        })
+        .catch(error => {
+          console.log(error)
+          res.status(500).json({ error: 'server could not get updated post' })
+
+        })
+    })
+    .catch(error => {
+      console.log(error)
+      res.status(500).json({ error: 'server could not change the post' })
+
+    })
 });
 
 // custom middleware
@@ -42,9 +60,12 @@ function validatePostId(req, res, next) {
   // do your magic!
   getById(req.params.id)
     .then(post => {
+      console.log(` line 55`)
       console.log(post)
+
       req.post = post
-      next()
+      post ? next() : res.status(404).json({ error: 'Post Id not found' })
+
     })
     .catch(error => {
       res.status(500).json({ error: 'server cannot use your post data' })
@@ -54,14 +75,3 @@ function validatePostId(req, res, next) {
 }
 
 module.exports = router;
-
-// try {
-//   // if (req.body.text && req.body.user_id) {
-//   //   next()
-//   // } else {
-//   //   res.status(400).json({error: 'Please send require data'})
-//   // }
-//   req.body.text && req.body.user_id ? next() : res.status(400).json({error: 'Please send require data'})
-// } catch (error) {
-//   res.status(500).json({error: 'server cannot use your post data'})
-// }

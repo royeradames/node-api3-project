@@ -8,7 +8,7 @@ const PostRouter= require('./posts/postRouter')
 const userRouter = require('./users/userRouter')
 
 const server = express()
-const port = 4000
+const port = process.env.PORT || 4000
 
 // build in middleware
 server.use(express.json())

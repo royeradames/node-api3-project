@@ -28,7 +28,20 @@ router.post('/', validateUser, (req, res) => {
 
 router.post('/:id/posts', validatePost, validateUserId, (req, res) => {
   // do your magic!
-
+  try {
+    insert(req.body)
+      .then(newPost => {
+        console.log(newPost)
+        if(newPost) res.status(200).json(newPost)
+        
+      })
+      .catch(err => {
+        console.log(err)
+        res.status(400).json({error: 'Did not receive require data'})
+      })
+  } catch (error) {
+    res.status(500).json({ error: 'server cannot create new post' })
+  }
 });
 
 // done

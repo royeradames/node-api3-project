@@ -1,10 +1,11 @@
-const express = require('express');
-const { get, getById, getUserPosts, remove, update, insert } = require('./userDb');
-const postDB = require('../posts/postDb');
-const { response } = require('express');
+const express = require('express')
+const { get, getById, getUserPosts, remove, update, insert } = require('./userDb')
+const postDB = require('../posts/postDb')
+const { response } = require('express')
 const validatePost = require('../middleware/validatePost')
+const restrict = require("../middleware/restrict")
 
-const router = express.Router();
+const router = express.Router()
 //done
 router.post('/', validateUser, (req, res) => {
   // do your magic!
@@ -13,20 +14,20 @@ router.post('/', validateUser, (req, res) => {
     insert(req.body)
       .then(newUser => {
         // console.log(`inside post / response --> ${newUser}`)
-        if(newUser) {
+        if (newUser) {
           res.status(200).json(newUser)
         } else {
-          res.status(400).json({error: 'User was not created'})
+          res.status(400).json({ error: 'User was not created' })
         }
       })
       .catch(err => {
         // console.log(`error on catch inside post / ${err}`)
-        res.status(400).json({error: 'Did not receive the require user data'})
+        res.status(400).json({ error: 'Did not receive the require user data' })
       })
   } catch (error) {
     res.status(500).json({ error: 'server cannot create new user' })
   }
-});
+})
 //done
 router.post('/:id/posts', validatePost, validateUserId, (req, res) => {
   // do your magic!
@@ -34,20 +35,20 @@ router.post('/:id/posts', validatePost, validateUserId, (req, res) => {
     postDB.insert(req.body)
       .then(newPost => {
         // console.log(newPost)
-        if(newPost) res.status(200).json(newPost)
-        
+        if (newPost) res.status(200).json(newPost)
+
       })
       .catch(err => {
         // console.log(err)
-        res.status(400).json({error: 'Did not receive require data'})
+        res.status(400).json({ error: 'Did not receive require data' })
       })
   } catch (error) {
     res.status(500).json({ error: 'server cannot create new post' })
   }
-});
+})
 
 // done
-router.get('/', (req, res) => {
+router.get('/', restrict, (req, res) => {
   // do your magic!
   try {
     get()
@@ -57,7 +58,7 @@ router.get('/', (req, res) => {
   } catch (error) {
     res.status(500).json({ error: 'Server could not get all users' })
   }
-});
+})
 
 //done
 router.get('/:id', validateUserId, (req, res) => {
@@ -67,7 +68,7 @@ router.get('/:id', validateUserId, (req, res) => {
   } catch (error) {
     res.status(500).json({ error: 'server cannot find user by id' })
   }
-});
+})
 
 // done
 router.get('/:id/posts', validateUserId, (req, res) => {
@@ -82,7 +83,7 @@ router.get('/:id/posts', validateUserId, (req, res) => {
   } catch (error) {
     res.status(500).json({ error: 'server cannot get the user posts' })
   }
-});
+})
 
 //done
 router.delete('/:id', validateUserId, (req, res) => {
@@ -112,7 +113,7 @@ router.delete('/:id', validateUserId, (req, res) => {
     res.status(500).json({ error: 'server cannot delete the user posts' })
 
   }
-});
+})
 
 router.put('/:id', validateUser, validateUserId, (req, res) => {
   // do your magic!
@@ -133,7 +134,7 @@ router.put('/:id', validateUser, validateUserId, (req, res) => {
   } catch (error) {
     res.status(500).json({ error: 'server cannot delete the user posts' })
   }
-});
+})
 
 //custom middleware
 

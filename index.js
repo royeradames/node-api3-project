@@ -17,6 +17,10 @@ server.use(logger)
 server.use('/posts',PostRouter)
 server.use('/users',userRouter)
 
+server.use("/greet/:name", (req, res) => {
+    const greeting = process.env.GREETING || "Hello";
+    res.status(200).send(`<h1>${greeting} ${req.params.name}</h1>`);
+});
 
 server.listen(port, () => {
 	console.log(`Server running at http://localhost:${port}`)
